@@ -1,0 +1,361 @@
+<template>
+  <div :class="type">
+    <input type="text" :value="word"><button id="inline-btn" @click="refresh">R</button></input>
+  </div>
+</template>
+
+<script>
+var words = {
+ "adjectives": [
+ "kaunis",
+ "vihreä",
+ "runsas",
+ "kuulas",
+ "viileä",
+ "kultainen",
+ "synkkä",
+ "herkkä",
+ "rehevä",
+ "kellertävä",
+ "kuulas",
+ "herkkä",
+ "elegantti",
+ "multainen",
+ "erityinen",
+ "ainutlaatuinen",
+ "energinen",
+ "tuoksuva",
+ "kasvava",
+ "elävä",
+ "voimakas",
+ "rehevä",
+ "räjähtävä",
+ "hiuksenhieno",
+ "tummanvihreä",
+ "keväänvihreä",
+ "taivaansininen",
+ "hämärä",
+ "synkkä",
+ "musta",
+ "tumma",
+ "kylmä",
+ "viileä",
+ "kostea",
+ "multaisa",
+ "huojuva",
+ "karhea",
+ "ainutlaatuinen",
+ "miehekäs",
+ "naisellinen",
+ "koskettava",
+ "pistelevä",
+ "kasvava",
+ "kuhiseva",
+ "kirkas",
+ "ainoa",
+ "ajankohtainen",
+ "kahiseva",
+ "riipaiseva",
+ "runollinen",
+ "uskalias",
+ "ujo",
+ "satumainen",
+ "aavemainen",
+ "autio",
+ "yksinäinen",
+ "tyhjä",
+ "punertava",
+ "maukas",
+ "kypsyvä",
+ "ikivanha",
+ "aava",
+ "aakea",
+ "hiljainen",
+ "koskematon",
+ "hengellinen",
+ "antoisa",
+ "kallisarvoinen",
+ "suomalainen",
+ "kotimainen",
+ "luonnollinen",
+ "terveellinen",
+ "kaiho",
+ "surullinen",
+ "uupunut",
+ "vilkas",
+ "nöyrä"
+],
+"verbs": [
+ "poimia",
+ "paistaa",
+ "kaatua",
+ "kasvaa",
+ "herätä",
+ "nousta",
+ "koittaa",
+ "uskaltaa",
+ "mennä",
+ "antaa",
+ "joustaa",
+ "elää",
+ "nukkua",
+ "painautua",
+ "koskettaa",
+ "kuulla",
+ "unohtaa",
+ "muistaa",
+ "kasvattaa",
+ "juosta",
+ "kuultaa",
+ "paistaa",
+ "mennä",
+ "laulaa",
+ "kuulla",
+ "rentoutua",
+ "nauttia",
+ "syödä",
+ "kerätä",
+ "kulkea",
+ "vaeltaa",
+ "hengähtää",
+ "tuntea",
+ "katsoa",
+ "tarkkailla",
+ "kuunnella",
+ "huutaa",
+ "piiloutua",
+ "kadota",
+ "hämärtyä",
+ "kadottaa",
+ "piilottaa",
+ "löytää",
+ "poimia",
+ "kurottaa",
+ "käpertyä",
+ "istahtaa",
+ "istua",
+ "kulkea",
+ "taivaltaa",
+ "lipua",
+ "hidastella",
+ "kiiruhtaa",
+ "hiljentyä",
+ "armahtaa",
+ "jäljittää",
+ "tuudittaa",
+ "irroittaa",
+ "havista",
+ "visertää",
+ "ulvoa",
+ "kohista",
+ "sataa",
+ "myrskytä"
+],
+"substantives": [
+ "koivu",
+ "mänty",
+ "metsä",
+ "honka",
+ "petäjä",
+ "kangas",
+ "sammal",
+ "oksa",
+ "käpy",
+ "sieni",
+ "lehti",
+ "marja",
+ "luonto",
+ "elämä",
+ "syksy",
+ "kevät",
+ "kesä",
+ "talvi",
+ "hanki",
+ "lumi",
+ "jälki",
+ "orava",
+ "eläin",
+ "jänis",
+ "hirvi",
+ "poro",
+ "karhu",
+ "otso",
+ "kallio",
+ "kivi",
+ "ravinto",
+ "henki",
+ "kehto",
+ "lapsi",
+ "poikanen",
+ "susi",
+ "muurahainen",
+ "kanto",
+ "eväät",
+ "termospullo",
+ "neulanen",
+ "korpi",
+ "metso",
+ "teeri",
+ "karpalo",
+ "puolukka",
+ "mustikka",
+ "kukka",
+ "nuppu",
+ "aromi",
+ "auringonvalo",
+ "sade",
+ "usva",
+ "halla",
+ "tihku",
+ "sumu",
+ "kumisaappaat",
+ "kyy",
+ "lintu",
+ "eläin",
+ "tiainen",
+ "korppi",
+ "sammal",
+ "koski",
+ "pelto",
+ "laakso",
+ "vaara",
+ "pesä",
+ "koti",
+ "kolo",
+ "vuori",
+ "muisto",
+ "hetki",
+ "tuoksu",
+ "savi",
+ "kangas",
+ "aurinko",
+ "kuu",
+ "tähdet",
+ "taivas",
+ "pilvet",
+ "suo",
+ "räme",
+ "oja"
+],
+"misc": [
+ "jos",
+ "joskus",
+ "kerran",
+ "aina",
+ "missä",
+ "siellä",
+ "kenet",
+ "miksi",
+ "emme",
+ "voi",
+ "minut",
+ "sinut",
+ "meidät",
+ "teidät",
+ "heidät",
+ "kenen",
+ "ainoa",
+ "mennyt",
+ "tuleva",
+ "ken",
+ "vaikka",
+ "kuin",
+ "kunnes",
+ "asti",
+ "joku",
+ "jonkun",
+ "jotain",
+ "jollei",
+ "minne",
+ "milloin",
+ "silloin",
+ "siellä",
+ "sinne",
+ "siksi",
+ "miksi",
+ "miksei",
+ "on",
+ "eilinen",
+ "tänään",
+ "ikuinen",
+ "aina",
+ "ehkei",
+ "ei",
+ "kyllä",
+ "ehkä",
+ "jopa",
+ "kuin"
+]
+};
+
+export default {
+  name: 'word',
+  data () {
+    return {
+      word: "init",
+      canvasElement: {},
+      controlElement: {},
+      elementGroup: {}
+    }
+  },
+
+  props: ['type', 'canvas'],
+
+  created: function () {
+    var wordclasses = ["adjectives", "verbs", "substantives", "misc"];
+    if(wordclasses.indexOf(this.type) !== -1) {
+      this.word = words[this.type][Math.floor(Math.random()*words[this.type].length)];
+    }
+    else {
+      var wordType = wordclasses[Math.floor(Math.random()*wordclasses.length)];
+      this.word = words[wordType][Math.floor(Math.random()*words[wordType].length)];
+    }
+
+    console.log(88, this.canvas);
+    this.canvasElement = new fabric.IText(this.word, {
+          // top : 100,
+          left : 0,
+          // originX: 'center',
+          // originY: 'center',
+          textBackgroundColor: 'rgb(0,0,0)',
+          fill: 'rgb(255,255,255)',
+          fontFamily: 'Courier',
+          // angle: (10-(Math.random()*20))
+      });
+
+    this.controlElement = new fabric.Circle({
+      radius: 22,
+      fill: '#f00',
+      left: this.canvasElement.getLeft() - 45
+      // originX: 'right',
+      // originY: 'center'
+    });
+
+    this.elementGroup = new fabric.Group([this.canvasElement, this.controlElement], {
+      top : 100,
+      left : 100,
+      angle: (10-(Math.random()*20))
+    })
+
+    this.canvas.add(this.elementGroup);
+
+    this.canvas.on('mouse:down', function(options) {
+      if (options.target) {
+        console.log('an object was clicked! ', options);
+      }
+    });
+
+  },
+
+  methods: {
+    refresh: function() {
+      this.word = words[this.type][Math.floor(Math.random()*words[this.type].length)];
+      this.canvasElement.setText(this.word);
+      this.canvas.renderAll()
+    }
+  }
+}
+
+
+
+</script>
