@@ -1,12 +1,12 @@
 <template>
-  <div :class="type">
+ <!--  <div :class="type">
     <input type="text" :value="word"><button id="inline-btn" @click="refresh">R</button></input>
-  </div>
+  </div> -->
 </template>
 
 <script>
 var words = {
- "adjectives": [
+"adjectives": [
  "kaunis",
  "vihreä",
  "runsas",
@@ -140,7 +140,6 @@ var words = {
  "hidastella",
  "kiiruhtaa",
  "hiljentyä",
- "armahtaa",
  "jäljittää",
  "tuudittaa",
  "irroittaa",
@@ -302,123 +301,105 @@ export default {
   props: ['type', 'canvas'],
 
   created: function () {
-    var wordclasses = ["adjectives", "verbs", "substantives", "misc"];
-    if(wordclasses.indexOf(this.type) !== -1) {
-      this.word = words[this.type][Math.floor(Math.random()*words[this.type].length)];
-    }
-    else {
-      var wordType = wordclasses[Math.floor(Math.random()*wordclasses.length)];
-      this.word = words[wordType][Math.floor(Math.random()*words[wordType].length)];
-    }
+    var self = this;
+    this.word = words[this.type.type][Math.floor(Math.random()*words[this.type.type].length)];
 
-    console.log(88, this.canvas);
     this.textElement = new fabric.IText(this.word, {
-          top : 100,
-          left : 30,
-          // originX: 'center',
-          // originY: 'center',
-          textBackgroundColor: 'rgb(0,0,0)',
-          fill: 'rgb(255,255,255)',
-          fontFamily: 'Courier',
-          angle: (10-(Math.random()*20))
-      });
+      left: self.type.startPos.x,
+      top: self.type.startPos.y,
+      textBackgroundColor: 'rgb(0,0,0)',
+      fill: 'rgb(255,255,255)',
+      fontFamily: 'Courier',
+      angle: (10-(Math.random()*20))
+    });
 
-    this.controlElement = new fabric.Circle({
-      radius: 22,
-      fill: '#f00',
+    this.controlElement = new fabric.Text('Uusi\nsana', {
+      fill: '#28b',
+      fontSize: 25,
+      fontFamily: 'Courier',
+      textBackgroundColor: '#FFF',
       hasControls: false,
       lockMovementX: true,
       lockMovementY: true,
       selectable: false,
       hoverCursor: 'pointer',
       visible: false
-
-      // originX: 'right',
-      // originY: 'center'
     });
 
-    // this.elementGroup = new fabric.Group([this.textElement, this.controlElement], {
-    //   top : 100,
-    //   left : 100,
-    //   angle: (10-(Math.random()*20))
-    // })
+    this.removalElement = new fabric.Text('Poista\nsana', {
+      fill: '#F00',
+      fontSize: 25,
+      fontFamily: 'Courier',
+      textBackgroundColor: '#FFF',
+      hasControls: false,
+      lockMovementX: true,
+      lockMovementY: true,
+      selectable: false,
+      hoverCursor: 'pointer',
+      visible: false
+    });
 
     this.canvas.add(this.textElement);
     this.canvas.add(this.controlElement);
-    this.moveControlElementTo(this.textElement);
+    this.canvas.add(this.removalElement);
+    this.moveControlElementsTo(this.textElement);
     this.canvas.renderAll();
 
-    // this.textElement.on("move", function(opts) {
-    //   this.controlElement.setLeft(this.textElement.getLeft() - 45);
-    // });
-
-    var self = this;
     this.canvas.on('object:moving', function(evt) {
       if (evt.target === self.textElement) {
-        self.moveControlElementTo(evt.target);
+        self.moveControlElementsTo(evt.target);
       }
     });
 
     this.canvas.on('object:rotating', function(evt) {
       if (evt.target === self.textElement) {
         self.controlElement.setVisible(false);
+        self.removalElement.setVisible(false);
       }
     });
 
     this.canvas.on('mouse:down', function(options) {
-      console.log(options.target)
-      if(options.target === null) {
-        self.controlElement.setVisible(false);
-      }
-
       if (options.target === self.controlElement) {
-        console.log('COTNROL was clicked! ', options);
         self.refresh();
-
-
-
-        var now = new Date().getTime();
-        var lastTouch = self.lastTouch || now + 1;
-        var delta = now - lastTouch;
-        if (delta < 300 && delta > 0) {
-            // After we detct a doubletap, start over
-            self.lastTouch = null;
-
-            console.log("Double touch")
-            self.refresh();
-
-        } else {
-            self.lastTouch = now;
-        }
+      } else if (options.target === self.removalElement) {
+        self.textElement.remove();
+        self.controlElement.remove();
+        self.removalElement.remove();
+      } else if (options.target === self.textElement) {
+        self.controlElement.setVisible(true);
+        self.removalElement.setVisible(true);
+      } else {
+        self.controlElement.setVisible(false);
+        self.removalElement.setVisible(false);
       }
-
-      // if(options.target === self.textElement) {
-      //   self.controlElement.setVisible(!self.controlElement.getVisible());
-      // }
-
-
     });
 
     this.canvas.on('object:selected', function(options) {
       if (options.target === self.textElement) {
         self.controlElement.setVisible(true);
+        self.removalElement.setVisible(true);
       }
     });
-
-
-
   },
 
   methods: {
     refresh: function() {
-      this.word = words[this.type][Math.floor(Math.random()*words[this.type].length)];
+      var wordclasses = ["adjectives", "verbs", "substantives", "misc"];
+      var wordType = wordclasses[Math.floor(Math.random()*wordclasses.length)];
+      this.word = words[wordType][Math.floor(Math.random()*words[wordType].length)];
       this.textElement.setText(this.word);
       this.canvas.renderAll()
     },
-    moveControlElementTo: function(el) {
-      this.controlElement.setLeft(el.getLeft() - 45);
-      this.controlElement.setTop(el.getTop());
+    moveControlElementsTo: function(el) {
+      this.controlElement.setLeft(el.getLeft() - 80);
+      this.controlElement.setTop(el.getTop() - 40);
       this.controlElement.setCoords();
+
+      this.removalElement.setLeft(el.getLeft() - 80);
+      this.removalElement.setTop(el.getTop() + 40);
+      this.removalElement.setCoords();
+
+      this.canvas.renderAll()
     }
   }
 }

@@ -1,21 +1,23 @@
 <template>
-  <div id="app">
-    <img src="./assets/logo.png">
-    <hello></hello>
-
+  <div id="app" class="container">
+    <div class="row">
+      <div class="two columns"></div>
+      <div class="eight columns"><poem></poem></div>
+      <div class="two columns"></div>
+    </div>
   </div>
 </template>
 
 <script>
-import Hello from './components/Hello'
+import Poem from './components/Poem'
+import normalize from './assets/normalize.css'
+import skeleton from './assets/skeleton.css'
 
 export default {
   name: 'app',
 
-
-
   components: {
-    Hello
+    Poem
   }
 }
 </script>
@@ -28,9 +30,5 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
-}
-
-html {
-  background-color: #cccccc;
 }
 </style>
