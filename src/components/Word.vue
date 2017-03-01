@@ -293,7 +293,7 @@ export default {
   data () {
     return {
       word: "init",
-      canvasElement: {},
+      textElement: {},
       controlElement: {},
       elementGroup: {}
     }
@@ -312,46 +312,113 @@ export default {
     }
 
     console.log(88, this.canvas);
-    this.canvasElement = new fabric.IText(this.word, {
-          // top : 100,
-          left : 0,
+    this.textElement = new fabric.IText(this.word, {
+          top : 100,
+          left : 30,
           // originX: 'center',
           // originY: 'center',
           textBackgroundColor: 'rgb(0,0,0)',
           fill: 'rgb(255,255,255)',
           fontFamily: 'Courier',
-          // angle: (10-(Math.random()*20))
+          angle: (10-(Math.random()*20))
       });
 
     this.controlElement = new fabric.Circle({
       radius: 22,
       fill: '#f00',
-      left: this.canvasElement.getLeft() - 45
+      hasControls: false,
+      lockMovementX: true,
+      lockMovementY: true,
+      selectable: false,
+      hoverCursor: 'pointer',
+      visible: false
+
       // originX: 'right',
       // originY: 'center'
     });
 
-    this.elementGroup = new fabric.Group([this.canvasElement, this.controlElement], {
-      top : 100,
-      left : 100,
-      angle: (10-(Math.random()*20))
-    })
+    // this.elementGroup = new fabric.Group([this.textElement, this.controlElement], {
+    //   top : 100,
+    //   left : 100,
+    //   angle: (10-(Math.random()*20))
+    // })
 
-    this.canvas.add(this.elementGroup);
+    this.canvas.add(this.textElement);
+    this.canvas.add(this.controlElement);
+    this.moveControlElementTo(this.textElement);
+    this.canvas.renderAll();
 
-    this.canvas.on('mouse:down', function(options) {
-      if (options.target) {
-        console.log('an object was clicked! ', options);
+    // this.textElement.on("move", function(opts) {
+    //   this.controlElement.setLeft(this.textElement.getLeft() - 45);
+    // });
+
+    var self = this;
+    this.canvas.on('object:moving', function(evt) {
+      if (evt.target === self.textElement) {
+        self.moveControlElementTo(evt.target);
       }
     });
+
+    this.canvas.on('object:rotating', function(evt) {
+      if (evt.target === self.textElement) {
+        self.controlElement.setVisible(false);
+      }
+    });
+
+    this.canvas.on('mouse:down', function(options) {
+      console.log(options.target)
+      if(options.target === null) {
+        self.controlElement.setVisible(false);
+      }
+
+      if (options.target === self.controlElement) {
+        console.log('COTNROL was clicked! ', options);
+        self.refresh();
+
+
+
+        var now = new Date().getTime();
+        var lastTouch = self.lastTouch || now + 1;
+        var delta = now - lastTouch;
+        if (delta < 300 && delta > 0) {
+            // After we detct a doubletap, start over
+            self.lastTouch = null;
+
+            console.log("Double touch")
+            self.refresh();
+
+        } else {
+            self.lastTouch = now;
+        }
+      }
+
+      // if(options.target === self.textElement) {
+      //   self.controlElement.setVisible(!self.controlElement.getVisible());
+      // }
+
+
+    });
+
+    this.canvas.on('object:selected', function(options) {
+      if (options.target === self.textElement) {
+        self.controlElement.setVisible(true);
+      }
+    });
+
+
 
   },
 
   methods: {
     refresh: function() {
       this.word = words[this.type][Math.floor(Math.random()*words[this.type].length)];
-      this.canvasElement.setText(this.word);
+      this.textElement.setText(this.word);
       this.canvas.renderAll()
+    },
+    moveControlElementTo: function(el) {
+      this.controlElement.setLeft(el.getLeft() - 45);
+      this.controlElement.setTop(el.getTop());
+      this.controlElement.setCoords();
     }
   }
 }

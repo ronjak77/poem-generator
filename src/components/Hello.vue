@@ -10,6 +10,7 @@
     <button @click="addWord('misc')">Add misc</button>
 
     <button @click="saveCanvas()">Save</button>
+    <button @click="changeBG()">New BG image</button>
   </div>
 </template>
 
@@ -29,55 +30,42 @@ export default {
   },
 
   mounted () {
-    // fabric.Canvas.prototype.getAbsoluteCoords = function(object) {
-    //   return {
-    //     left: object.left + this._offset.left,
-    //     top: object.top + this._offset.top
-    //   };
-    // }
-
+    var self = this;
     this.canvas = new fabric.Canvas('canvas');
     this.canvas.backgroundColor = 'white';
-
-
-
-    // var rect = new fabric.Rect({
-    //     top : 100,
-    //     left : 100,
-    //     width : 60,
-    //     height : 70,
-    //     fill : 'red'
+    this.changeBG();
+    // this.bgImage = new fabric.Image.fromURL('../static/1.jpg', function(oImg) {
+    //   oImg.scale(0.5);
     // });
+    // this.canvas.setBackgroundImage('../static/1.jpg', this.canvas.renderAll.bind(this.canvas));
+    // this.canvas.setBackgroundImage(this.bgImage, this.canvas.renderAll.bind(this.canvas));
 
-    // this.canvas.add(rect);
+
+
   },
 
   methods: {
     addWord: function(type) {
       this.wordlist.push(type);
-
-    //   var rect = new fabric.IText(type, {
-    //       top : 100,
-    //       left : 100,
-    //       width : 60,
-    //       height : 70,
-    //       textBackgroundColor: 'rgb(0,0,0)',
-    //       fill: 'rgb(255,255,255)',
-    //       fontFamily: 'Courier',
-    //       angle: (10-(Math.random()*20))
-    //   });
-
-    // this.canvas.add(rect);
-
     },
     saveCanvas: function() {
       window.open(this.canvas.toDataURL('png'));
+    },
+    changeBG: function() {
+      var randomImage = '../static/' + Math.floor(1 + Math.random()*10) + '.jpg';
+      console.log(randomImage);
+      var self = this;
+      fabric.Image.fromURL(randomImage, function(img) {
+        self.canvas.backgroundImage = img;
+        self.canvas.backgroundImage.width = 600;
+        self.canvas.backgroundImage.height = 400;
+        self.canvas.renderAll();
+      });
     }
   }
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 h1, h2 {
   font-weight: normal;
