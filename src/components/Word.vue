@@ -1,7 +1,4 @@
 <template>
- <!--  <div :class="type">
-    <input type="text" :value="word"><button id="inline-btn" @click="refresh">R</button></input>
-  </div> -->
 </template>
 
 <script>

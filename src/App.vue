@@ -1,10 +1,6 @@
 <template>
   <div id="app" class="container">
-    <div class="row">
-      <div class="two columns"></div>
-      <div class="eight columns"><poem></poem></div>
-      <div class="two columns"></div>
-    </div>
+    <poem></poem>
   </div>
 </template>
 
