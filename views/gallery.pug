@@ -1,0 +1,18 @@
+html
+  head
+    title Runogeneraattorin tuotoksia
+    link(rel="stylesheet" href="./assets/normalize.css")
+    link(rel="stylesheet" href="./assets/skeleton.css")
+    link(href='.assets/favicon.ico', rel='icon')
+    link(rel="stylesheet" href="./assets/main.css")
+
+  body
+    nav.menu
+      .container
+        .row
+          .ten.columns
+            a(href="/") Tee oma metsärunosi
+
+    .gallery
+      each val, index in images
+        img(class='img-grid' src=val.url)

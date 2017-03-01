@@ -1,5 +1,6 @@
 <template>
   <div class="poem">
+    <p>Tuplaklikkaamalla voit lisätä sanoja. Voit arpoa uuden sanan tai poistaa nykyisiä. Tuplaklikkaamalla sanaa voit muokata sitä kirjoittamalla, jolloin esim. sanan taivutus onnistuu.</p>
     <canvas id="canvas" width="600" height="400"></canvas>
     <word v-for="item in wordlist" v-bind:type="item" :canvas="canvas"></word>
 
@@ -50,7 +51,7 @@ export default {
     return {
       wordlist: [],
       canvas: {},
-      backgroundInfo: {author: "Asd", url: "www.site.com"}
+      backgroundInfo: {author: "placeholder", url: "www.site.com"}
     }
   },
 
@@ -59,6 +60,9 @@ export default {
   },
 
   mounted () {
+    // var h = XXH.h32( 'abcd', 0xABCD ).toString(16);
+    // console.log(h)
+
     var self = this;
     this.canvas = new fabric.Canvas('canvas');
     this.canvas.backgroundColor = 'white';
@@ -103,6 +107,7 @@ export default {
         }
       };
       var data = JSON.stringify({ "image": imageData });
+
       xhr.send(data);
 
     },

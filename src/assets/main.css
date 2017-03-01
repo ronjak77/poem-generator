@@ -1,0 +1,21 @@
+.img-grid {
+  width: 600px;
+  height: 400px;
+  padding: 3em;
+  display:block;
+  margin-left:auto;
+  margin-right:auto;
+}
+
+.gallery {
+   margin: 0 auto !important;
+   padding-bottom: 2em;
+}
+
+.menu {
+  padding-top: 2em;
+}
+
+.pull-right {
+  align: right;
+}
