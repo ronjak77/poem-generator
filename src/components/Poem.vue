@@ -7,6 +7,22 @@
     <button @click="exportCanvas()">Lähetä galleriaan</button>
     <button @click="changeBG()">Vaihda taustakuva</button>
 
+    <form action="https://poem-generator.s3.amazonaws.com/" method="post" enctype="multipart/form-data">
+      <input type="hidden" name="key" value="uploads/${filename}">
+      <input type="hidden" name="AWSAccessKeyId" value="AKIAI4KWRBHI5P5LPGSQ">
+      <input type="hidden" name="acl" value="private">
+      <input type="hidden" name="success_action_redirect" value="http://localhost/">
+      <input type="hidden" name="policy" value="eyJleHBpcmF0aW9uIjogIjIwMTgtMDEtMDFUMDA6MDA6MDBaIiwNCiAgImNvbmRpdGlvbnMiOiBbDQogICAgeyJidWNrZXQiOiAicG9lbS1nZW5lcmF0b3IifSwNCiAgICBbInN0YXJ0cy13aXRoIiwgIiRrZXkiLCAidXBsb2Fkcy8iXSwNCiAgICB7ImFjbCI6ICJwcml2YXRlIn0sDQogICAgeyJzdWNjZXNzX2FjdGlvbl9yZWRpcmVjdCI6ICJodHRwOi8vbG9jYWxob3N0LyJ9LA0KICAgIFsic3RhcnRzLXdpdGgiLCAiJENvbnRlbnQtVHlwZSIsICIiXSwNCiAgICBbImNvbnRlbnQtbGVuZ3RoLXJhbmdlIiwgMCwgMTA0ODU3Nl0NCiAgXQ0KfQ==">
+      <input type="hidden" name="signature" value="e7tt/FdcQNtjOjiIOLDQbK3GBQA=">
+      <input type="hidden" name="Content-Type" value="image/jpeg">
+      <!-- Include any additional input fields here -->
+
+      File to upload to S3:
+      <input name="file" type="file">
+      <br>
+      <input type="submit" value="Upload File to S3">
+    </form>
+
   </div>
 </template>
 
@@ -57,6 +73,7 @@ export default {
       }
     },
     saveCanvas: function() {
+
       window.open(this.canvas.toDataURL('png'));
     },
     exportCanvas: function() {
