@@ -23,45 +23,27 @@ app.get('/', function (req, res) {
 
 app.post('/upload', function (req, res) {
   var myBucket = 'poem-generator';
-  var crypto = require('crypto');
-
-  var hash = crypto.createHash('md5').update(req.body.image).digest('hex');
 
   buf = new Buffer(req.body.image.replace(/^data:image\/\w+;base64,/, ""),'base64')
   var fileUploadData = {
-    Key: hash,
+    Key: (Math.floor(Date.now() / 1000) + ""),
     Bucket: myBucket,
     Body: buf,
     ContentEncoding: 'base64',
     ContentType: 'image/jpeg'
   };
 
-  var params = {
-    Bucket: myBucket,
-    Key: hash
-  };
-
-  s3.headObject(params, function(err, data) {
+  s3.putObject(fileUploadData, function(err, data){
     if (err) {
-      if(err.statusCode === 404) {
-        s3.putObject(fileUploadData, function(err, data){
-            if (err) {
-              console.log(err);
-              console.log('Error uploading data: ', fileUploadData);
-              res.sendStatus(500)
-            } else {
-              console.log('succesfully uploaded the image!');
-              res.sendStatus(200)
-            }
-        });
-      }
-    }  // an error occurred
-    else {
-      console.log(data);
-      console.log("There was already identical file");
+      console.log(err);
+      console.log('Error uploading data: ', fileUploadData);
       res.sendStatus(500)
+    } else {
+      console.log('succesfully uploaded the image!');
+      res.sendStatus(200)
     }
   });
+
 })
 
 app.get('/galleria', function(req, res) {
