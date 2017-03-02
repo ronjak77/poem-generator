@@ -11,6 +11,8 @@ var s3 = new AWS.S3();
 
 app.use('/static', express.static(path.join(__dirname+'/dist/static')))
 
+app.use(bodyParser.json({limit: '50mb', extended: true, parameterLimit:50000}));
+
 app.use('/assets', express.static(path.join(__dirname+'/src/assets')))
 
 app.set('view engine', 'pug')
