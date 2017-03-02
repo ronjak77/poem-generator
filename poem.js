@@ -4,7 +4,7 @@ var path = require("path");
 var bodyParser = require('body-parser');
 var AWS = require('aws-sdk');
 
-AWS.config.loadFromPath('./config.json');
+AWS.config.loadFromPath('./AWSconfig.json');
 var s3 = new AWS.S3();
 
 app.use('/static', express.static(path.join(__dirname+'/dist/static')))
