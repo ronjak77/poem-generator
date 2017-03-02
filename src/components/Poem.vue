@@ -5,7 +5,7 @@
     <word v-for="item in wordlist" v-bind:type="item" :canvas="canvas"></word>
 
     <p>Valokuvaaja: <a :href="backgroundInfo.url">{{ backgroundInfo.author }}</a></p>
-    <button @click="saveCanvas()">Lähetä galleriaan</button>
+    <button v-show="!uploading" @click="saveCanvas()">Lähetä galleriaan</button><i v-show="uploading" class="fa fa-spinner fa-spin"></i>
     <button @click="changeBG()">Vaihda taustakuva</button>
 
   </div>
@@ -48,7 +48,8 @@ export default {
     return {
       wordlist: [],
       canvas: {},
-      backgroundInfo: {author: "placeholder", url: "www.site.com"}
+      backgroundInfo: {author: "placeholder", url: "www.site.com"},
+      uploading: false
     }
   },
 
@@ -91,7 +92,7 @@ export default {
       var self = this;
       var imageData = this.canvas.toDataURL('png');
       var xhr = new XMLHttpRequest();
-
+      this.uploading = true;
       xhr.open('POST', 'upload', true);
       xhr.setRequestHeader("Content-type", "application/json");
       xhr.onload = function () {
@@ -100,6 +101,7 @@ export default {
         } else {
           alert('An error occurred!');
         }
+        self.uploading = false;
       };
       var data = JSON.stringify({ "image": imageData });
 
@@ -110,7 +112,6 @@ export default {
       var totalNum = credits.total;
       var randNum = Math.floor(1 + Math.random()*totalNum);
       var randomImage = '../static/' + randNum + '.jpg';
-      console.log(credits.arr[randNum + 1]);
       this.backgroundInfo.author = credits.arr[randNum - 1].author;
       this.backgroundInfo.url = credits.arr[randNum - 1].url;
       var self = this;

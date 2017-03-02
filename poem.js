@@ -48,8 +48,10 @@ app.post('/upload', function (req, res) {
             if (err) {
               console.log(err);
               console.log('Error uploading data: ', fileUploadData);
+              res.sendStatus(500)
             } else {
               console.log('succesfully uploaded the image!');
+              res.sendStatus(200)
             }
         });
       }
@@ -57,6 +59,7 @@ app.post('/upload', function (req, res) {
     else {
       console.log(data);
       console.log("There was already identical file");
+      res.sendStatus(500)
     }
   });
 })
