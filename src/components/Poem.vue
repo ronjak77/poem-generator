@@ -60,9 +60,6 @@ export default {
   },
 
   mounted () {
-    // var h = XXH.h32( 'abcd', 0xABCD ).toString(16);
-    // console.log(h)
-
     var self = this;
     this.canvas = new fabric.Canvas('canvas');
     this.canvas.backgroundColor = 'white';

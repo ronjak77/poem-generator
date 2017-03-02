@@ -4,6 +4,7 @@ var path = require("path");
 var bodyParser = require('body-parser');
 var AWS = require('aws-sdk');
 
+AWS.config.loadFromPath('./config.json');
 var s3 = new AWS.S3();
 
 app.use('/static', express.static(path.join(__dirname+'/dist/static')))
@@ -33,32 +34,29 @@ app.post('/upload', function (req, res) {
     ContentType: 'image/jpeg'
   };
 
-    var params = {
-      Bucket: myBucket,
-      Key: hash
-    };
+  var params = {
+    Bucket: myBucket,
+    Key: hash
+  };
 
-    s3.headObject(params, function(err, data) {
-      if (err) {
-        if(err.statusCode === 404) {
-          s3.putObject(fileUploadData, function(err, data){
-              if (err) {
-                console.log(err);
-                console.log('Error uploading data: ', fileUploadData);
-              } else {
-                console.log('succesfully uploaded the image!');
-              }
-          });
-        }
-        // console.log(err, err.stack);
-      }  // an error occurred
-      else {
-        console.log(data);
-        console.log("There was already identical file");
-      }              // successful response
-    });
-
-  res.redirect('/galleria');
+  s3.headObject(params, function(err, data) {
+    if (err) {
+      if(err.statusCode === 404) {
+        s3.putObject(fileUploadData, function(err, data){
+            if (err) {
+              console.log(err);
+              console.log('Error uploading data: ', fileUploadData);
+            } else {
+              console.log('succesfully uploaded the image!');
+            }
+        });
+      }
+    }  // an error occurred
+    else {
+      console.log(data);
+      console.log("There was already identical file");
+    }
+  });
 })
 
 app.get('/galleria', function(req, res) {
@@ -70,7 +68,6 @@ app.get('/galleria', function(req, res) {
     var imag = {};
     var urlParams = {Bucket: 'poem-generator', Key: bucketContents[i].Key};
     s3.getSignedUrl('getObject',urlParams, function(err, url){
-      console.log('the url of the image is', url);
       var image = {};
       image.url = url;
       image.key = bucketContents[i].Key;

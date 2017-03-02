@@ -32,4 +32,11 @@ export default {
   padding-top: 2em;
 }
 
+.pull-right {
+  float: right;
+}
+
+.m-t {
+  margin-top: 1em;
+}
 </style>
