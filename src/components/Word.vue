@@ -310,7 +310,7 @@ export default {
       angle: (10-(Math.random()*20))
     });
 
-    this.controlElement = new fabric.Text('Uusi\narvo', {
+    this.controlElement = new fabric.Text('Vaihda\nsana', {
       fill: '#28b',
       fontSize: 25,
       fontFamily: 'Courier',
