@@ -4,6 +4,8 @@ var path = require("path");
 var bodyParser = require('body-parser');
 var AWS = require('aws-sdk');
 
+app.set('port', process.env.PORT || 8080);
+
 AWS.config.loadFromPath('./AWSconfig.json');
 var s3 = new AWS.S3();
 
@@ -78,6 +80,6 @@ app.get('/galleria', function(req, res) {
   });
 })
 
-app.listen(3000, function () {
-  console.log('Example app listening on port 3000!')
+app.listen(app.get('port'), function () {
+  console.log('Example app listening on port ' + app.get('port'))
 })
