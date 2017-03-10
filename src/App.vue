@@ -1,6 +1,11 @@
 <template>
   <div id="app" class="container">
-    <poem></poem>
+    <input type="radio" id="FI" value="FI" v-model="lang">
+    <label for="FI">FI</label>
+    <input type="radio" id="EN" value="EN" v-model="lang">
+    <label for="EN">EN</label>
+    <br>
+    <poem :language="lang"></poem>
   </div>
 </template>
 
@@ -12,6 +17,12 @@ import fa from './assets/font-awesome-4.7.0/css/font-awesome.min.css'
 
 export default {
   name: 'app',
+
+  data () {
+    return {
+      lang: "FI"
+    }
+  },
 
   components: {
     Poem
@@ -27,6 +38,10 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+}
+
+label {
+  display: inline !important;
 }
 
 .menu {

@@ -1,13 +1,13 @@
 <template>
   <div class="poem">
-    <p>Tuplaklikkaamalla taustakuvaa voit lisätä sanoja. Voit arpoa uuden sanan tai poistaa nykyisiä. Tuplaklikkaamalla sanaa voit muokata sitä kirjoittamalla, jolloin esim. sanan taivutus onnistuu.</p>
+    <p v-show="isFinnish">Tuplaklikkaamalla taustakuvaa voit lisätä sanoja. Voit arpoa uuden sanan tai poistaa nykyisiä. Tuplaklikkaamalla sanaa voit muokata sitä kirjoittamalla, jolloin esim. sanan taivutus onnistuu.</p>
+    <p v-show="!isFinnish">You can add new words by double-clicking the background. To select a word, click it once. You can edit the currently selected word via the buttons, by re-rolling a new random word, or by deleting it. You can edit the word and write your own custom words by double-clicking one.</p>
     <canvas id="canvas" width="600" height="400"></canvas>
-    <word v-for="item in wordlist" v-bind:type="item" :canvas="canvas"></word>
-
-    <p>Valokuvaaja: <a :href="backgroundInfo.url">{{ backgroundInfo.author }}</a></p>
-    <button v-show="!uploading" @click="saveCanvas()">Lähetä galleriaan</button><i v-show="uploading" class="fa fa-spinner fa-spin"></i>
-    <button @click="changeBG()">Vaihda taustakuva</button>
-
+    <word v-for="item in wordlist" v-bind:type="item" :lang="language" :canvas="canvas"></word>
+    <p><span v-show="isFinnish">Valokuvaaja: </span><span v-show="!isFinnish">Photographer: </span><a :href="backgroundInfo.url">{{ backgroundInfo.author }}</a></p>
+    <button v-show="!uploading" @click="saveCanvas()"><p v-show="isFinnish">Lähetä galleriaan</p><p v-show="!isFinnish">Upload to gallery</p></button><i v-show="uploading" class="fa fa-spinner fa-spin"></i>
+    <button @click="changeBG()"><p v-show="isFinnish">Vaihda taustakuva</p><p v-show="!isFinnish">Change background image</p></button>
+    <button @click="saveToPC()"><p v-show="isFinnish">Tallenna koneelle</p><p v-show="!isFinnish">Save locally</p></button>
   </div>
 </template>
 
@@ -53,6 +53,16 @@ export default {
     }
   },
 
+  props: {
+    language: String
+  },
+
+  computed: {
+    isFinnish: function () {
+      return this.language === "FI"
+    }
+  },
+
   components: {
     Word
   },
@@ -81,7 +91,14 @@ export default {
   methods: {
     addWord: function(type, coord) {
       if(type === "random") {
-        var wordclasses = ["adjectives", "verbs", "substantives", "misc"];
+        var wordclassesFin = ["adjectives", "verbs", "substantives", "misc", "misc"];
+        var wordclassesEng = ["adjectivesEng", "verbsEng", "substantivesEng", "miscEng", "miscEng"];
+        if(this.isFinnish) {
+          var wordclasses = wordclassesFin;
+        } else {
+          var wordclasses = wordclassesEng;
+        }
+
         var wordType = wordclasses[Math.floor(Math.random()*wordclasses.length)];
         this.wordlist.push({ type: wordType, startPos: coord });
       } else {
@@ -104,9 +121,12 @@ export default {
         self.uploading = false;
       };
       var data = JSON.stringify({ "image": imageData });
-
       xhr.send(data);
-
+    },
+    saveToPC: function() {
+      var self = this;
+      var imageData = this.canvas.toDataURL('png');
+      window.open(imageData);
     },
     changeBG: function() {
       var totalNum = credits.total;
