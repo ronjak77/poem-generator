@@ -2,11 +2,10 @@
   <div class="poem">
     <p v-show="isFinnish">Tuplaklikkaamalla taustakuvaa voit lisätä sanoja. Voit arpoa uuden sanan tai poistaa nykyisiä. Tuplaklikkaamalla sanaa voit muokata sitä kirjoittamalla, jolloin esim. sanan taivutus onnistuu.</p>
     <p v-show="!isFinnish">You can add new words by double-clicking the background. To select a word, click it once. You can edit the currently selected word via the buttons, by re-rolling a new random word, or by deleting it. You can edit the word and write your own custom words by double-clicking one.</p>
-    <canvas id="canvas" width="600" height="400"></canvas>
+    <canvas id="canvas" width="800" height="600"></canvas>
     <word v-for="item in wordlist" v-bind:type="item" :lang="language" :canvas="canvas"></word>
-    <p><span v-show="isFinnish">Valokuvaaja: </span><span v-show="!isFinnish">Photographer: </span><a :href="backgroundInfo.url">{{ backgroundInfo.author }}</a></p>
     <button v-show="!uploading" @click="saveCanvas()"><p v-show="isFinnish">Lähetä galleriaan</p><p v-show="!isFinnish">Upload to gallery</p></button><i v-show="uploading" class="fa fa-spinner fa-spin"></i>
-    <button @click="changeBG()"><p v-show="isFinnish">Vaihda taustakuva</p><p v-show="!isFinnish">Change background image</p></button>
+    <button v-show="!changingBG" @click="changeBG()"><p v-show="isFinnish">Vaihda taustakuva</p><p v-show="!isFinnish">Change background image</p></button><i v-show="changingBG" class="fa fa-spinner fa-spin"></i>
     <button @click="saveToPC()"><p v-show="isFinnish">Tallenna koneelle</p><p v-show="!isFinnish">Save locally</p></button>
   </div>
 </template>
@@ -48,8 +47,8 @@ export default {
     return {
       wordlist: [],
       canvas: {},
-      backgroundInfo: {author: "placeholder", url: "www.site.com"},
-      uploading: false
+      uploading: false,
+      changingBG: false
     }
   },
 
@@ -107,9 +106,9 @@ export default {
     },
     saveCanvas: function() {
       var self = this;
+      self.uploading = true;
       var imageData = this.canvas.toDataURL('png');
       var xhr = new XMLHttpRequest();
-      this.uploading = true;
       xhr.open('POST', 'upload', true);
       xhr.setRequestHeader("Content-type", "application/json");
       xhr.onload = function () {
@@ -120,7 +119,7 @@ export default {
         }
         self.uploading = false;
       };
-      var data = JSON.stringify({ "image": imageData });
+      var data = JSON.stringify({ "image": imageData, "langFI": self.isFinnish });
       xhr.send(data);
     },
     saveToPC: function() {
@@ -129,18 +128,25 @@ export default {
       window.open(imageData);
     },
     changeBG: function() {
-      var totalNum = credits.total;
-      var randNum = Math.floor(1 + Math.random()*totalNum);
-      var randomImage = '../static/' + randNum + '.jpg';
-      this.backgroundInfo.author = credits.arr[randNum - 1].author;
-      this.backgroundInfo.url = credits.arr[randNum - 1].url;
       var self = this;
-      fabric.Image.fromURL(randomImage, function(img) {
-        self.canvas.backgroundImage = img;
-        self.canvas.backgroundImage.width = 800;
-        self.canvas.backgroundImage.height = 600;
-        self.canvas.renderAll();
-      });
+      this.changingBG = true;
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', 'bg', true);
+      xhr.setRequestHeader("Content-type", "application/json");
+      xhr.onload = function () {
+        if (xhr.status === 200) {
+          fabric.Image.fromURL(xhr.response, function(img) {
+            self.canvas.backgroundImage = img;
+            self.canvas.backgroundImage.width = 800;
+            self.canvas.backgroundImage.height = 600;
+            self.canvas.renderAll();
+            self.changingBG = false;
+          }, {crossOrigin: "anonymous"});
+        } else {
+          self.changingBG = false;
+        }
+      };
+      xhr.send();
     }
   }
 }

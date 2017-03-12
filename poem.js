@@ -4,6 +4,8 @@ var path = require("path");
 var bodyParser = require('body-parser');
 var AWS = require('aws-sdk');
 
+var bgUrls = [];
+
 app.set('port', process.env.PORT || 8080);
 
 AWS.config.loadFromPath('./AWSconfig.json');
@@ -23,10 +25,17 @@ app.get('/', function (req, res) {
 
 app.post('/upload', function (req, res) {
   var myBucket = 'poem-generator';
+  buf = new Buffer(req.body.image.replace(/^data:image\/\w+;base64,/, ""),'base64');
+  var filename = Math.floor(Date.now() / 1000);
 
-  buf = new Buffer(req.body.image.replace(/^data:image\/\w+;base64,/, ""),'base64')
+  if(req.body.langFI) {
+    var foldername = "approved/";
+  } else {
+    var foldername = "approvedEng/";
+  }
+
   var fileUploadData = {
-    Key: (Math.floor(Date.now() / 1000) + ""),
+    Key: (foldername + filename),
     Bucket: myBucket,
     Body: buf,
     ContentEncoding: 'base64',
@@ -47,26 +56,71 @@ app.post('/upload', function (req, res) {
 })
 
 app.get('/galleria', function(req, res) {
-  var params = { Bucket: 'poem-generator' };
+  var params = { Bucket: 'poem-generator', "Prefix": "approved/" };
   s3.listObjects(params, function(err, data){
-  var bucketContents = data.Contents;
-  var imageUrls = [];
-  for (var i = 0; i < bucketContents.length; i++){
-    var imag = {};
-    var urlParams = {Bucket: 'poem-generator', Key: bucketContents[i].Key};
-    s3.getSignedUrl('getObject',urlParams, function(err, url){
-      var image = {};
-      image.url = url;
-      image.key = bucketContents[i].Key;
-      imag = image;
-    });
-    imageUrls[i] = imag;
-  }
-
+    var bucketContents = data.Contents;
+    console.log(bucketContents);
+    var imageUrls = [];
+    for (var i = 1; i < bucketContents.length-1; i++){
+      var imag = {};
+      var urlParams = {Bucket: 'poem-generator', Key: bucketContents[i].Key};
+      s3.getSignedUrl('getObject', urlParams, function(err, url){
+        var image = {};
+        image.url = url;
+        image.key = bucketContents[i].Key;
+        imag = image;
+      });
+      imageUrls[i-1] = imag;
+    }
     res.render('gallery', { images: imageUrls })
   });
 })
 
+app.get('/gallery', function(req, res) {
+  var params = { Bucket: 'poem-generator', "Prefix": "approvedEng/" };
+  s3.listObjects(params, function(err, data){
+    var bucketContents = data.Contents;
+    var imageUrls = [];
+    for (var i = 1; i < bucketContents.length-1; i++){
+      var imag = {};
+      var urlParams = {Bucket: 'poem-generator', Key: bucketContents[i].Key};
+      s3.getSignedUrl('getObject', urlParams, function(err, url){
+        var image = {};
+        image.url = url;
+        image.key = bucketContents[i].Key;
+        imag = image;
+      });
+      imageUrls[i-1] = imag;
+    }
+    res.render('gallery', { images: imageUrls })
+  });
+})
+
+app.get('/bg', function(req, res) {
+  var randNum = Math.floor(Math.random()*(bgUrls.length-1));
+  console.log(randNum);
+  console.log(bgUrls);
+  var img = bgUrls[randNum+1];
+  res.status(200).send(img.url);
+})
+
 app.listen(app.get('port'), function () {
+  var params = { Bucket: 'poem-generator', "Prefix": "bg/" };
+  s3.listObjects(params, function(err, data){
+    var bucketContents = data.Contents;
+    console.log(bucketContents);
+    for (var i = 0; i < bucketContents.length; i++) {
+      var imag = {};
+      var urlParams = {Bucket: 'poem-generator', Key: bucketContents[i].Key};
+      s3.getSignedUrl('getObject', urlParams, function(err, url){
+        var image = {};
+        image.url = url;
+        image.key = bucketContents[i].Key;
+        imag = image;
+      });
+      bgUrls[i] = imag;
+    }
+  });
+
   console.log('Example app listening on port ' + app.get('port'))
 })

@@ -973,7 +973,4 @@ export default {
     }
   }
 }
-
-
-
 </script>

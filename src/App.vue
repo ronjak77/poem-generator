@@ -55,4 +55,8 @@ label {
 .m-t {
   margin-top: 1em;
 }
+
+.m-r {
+  margin-right: 1em;
+}
 </style>
