@@ -103,17 +103,14 @@ app.get('/bg', function(req, res) {
 
 app.listen(app.get('port'), function () {
   var params = { Bucket: 'poem-generator', "Prefix": "bg/" };
+  var prefix = 'https://poem-generator.s3-eu-west-1.amazonaws.com/';
+
   s3.listObjects(params, function(err, data){
     var bucketContents = data.Contents;
     for (var i = 0; i < bucketContents.length; i++) {
-      var imag = {};
-      var urlParams = {Bucket: 'poem-generator', Key: bucketContents[i].Key};
-      s3.getSignedUrl('getObject', urlParams, function(err, url){
-        var image = {};
-        image.url = url;
-        image.key = bucketContents[i].Key;
-        imag = image;
-      });
+      imag = {};
+      imag.url = prefix + bucketContents[i].Key;
+      imag.key = bucketContents[i].Key;
       bgUrls[i] = imag;
     }
   });
