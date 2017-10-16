@@ -59,59 +59,40 @@ app.post('/upload', function (req, res) {
 
 app.get('/galleria', function(req, res) {
   var params = { Bucket: 'poem-generator', Prefix: "approved" };
-  var imageUrls = [];
-  s3.listObjectsV2(params, function(err, data){
-    if (err) console.log(err, err.stack); // an error occurred
-    else  {
-      var bucketContents = data.Contents;
-      console.log(bucketContents);
-      for (var i = 1; i < bucketContents.length-1; i++);
-        var urlParams = {Bucket: 'poem-generator', Key: bucketContents[i].Key};
-        console.log(urlParams);
-        s3.getSignedUrl('getObject', urlParams, function(err, url){
-          if (err) console.log(err, err.stack); // an error occurred
-          else  {
-            console.log(url);
-            var image = {};
-            image.url = url;
-            image.key = bucketContents[i].Key;
-            imageUrls[i-1] = image;
-          }
-        });
-      }
-    }
-    res.render('gallery', { images: imageUrls })
-  });
+  var imageUrls = getGalleryUrls(params);
+  res.render('gallery', { images: imageUrls });
 })
 
-app.get('/gallery', function(req, res) {
-  var params = { Bucket: 'poem-generator', Prefix: "approvedEng" };
+function getGalleryUrls(params) {
   var imageUrls = [];
   s3.listObjectsV2(params, function(err, data){
-    if (err) console.log(err, err.stack); // an error occurred
+    if (err) console.log(err, err.stack);
     else  {
       var bucketContents = data.Contents;
       console.log(bucketContents);
-      for (var i = 1; i < bucketContents.length-1; i++){
-        var imag = {};
+      for (var i = 1; i < bucketContents.length; i++) {
         var urlParams = {Bucket: 'poem-generator', Key: bucketContents[i].Key};
         console.log(urlParams);
-
         s3.getSignedUrl('getObject', urlParams, function(err, url){
-          if (err) console.log(err, err.stack); // an error occurred
+          if (err) console.log(err, err.stack);
           else  {
+            var imag = {};
+            imag.url = url;
             console.log(url);
-            var image = {};
-            image.url = url;
-            image.key = bucketContents[i].Key;
-            imag = image;
             imageUrls[i-1] = imag;
           }
         });
       }
     }
-    res.render('gallery', { images: imageUrls })
   });
+  return imageUrls;
+}
+
+app.get('/gallery', function(req, res) {
+  var params = { Bucket: 'poem-generator', Prefix: "approvedEng" };
+  var imageUrls = getGalleryUrls(params);
+  console.log(imageUrls);
+  res.render('gallery', { images: imageUrls });
 })
 
 app.get('/bg', function(req, res) {
