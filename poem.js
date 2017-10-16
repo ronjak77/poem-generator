@@ -65,17 +65,17 @@ app.get('/galleria', function(req, res) {
     else  {
       var bucketContents = data.Contents;
       console.log(bucketContents);
-      for (var i = 1; i < bucketContents.length-1; i++){
-        var imag = {};
+      for (var i = 1; i < bucketContents.length-1; i++);
         var urlParams = {Bucket: 'poem-generator', Key: bucketContents[i].Key};
+        console.log(urlParams);
         s3.getSignedUrl('getObject', urlParams, function(err, url){
           if (err) console.log(err, err.stack); // an error occurred
           else  {
+            console.log(url);
             var image = {};
             image.url = url;
             image.key = bucketContents[i].Key;
-            imag = image;
-            imageUrls[i-1] = imag;
+            imageUrls[i-1] = image;
           }
         });
       }
@@ -95,9 +95,12 @@ app.get('/gallery', function(req, res) {
       for (var i = 1; i < bucketContents.length-1; i++){
         var imag = {};
         var urlParams = {Bucket: 'poem-generator', Key: bucketContents[i].Key};
+        console.log(urlParams);
+
         s3.getSignedUrl('getObject', urlParams, function(err, url){
           if (err) console.log(err, err.stack); // an error occurred
           else  {
+            console.log(url);
             var image = {};
             image.url = url;
             image.key = bucketContents[i].Key;
