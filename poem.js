@@ -8,8 +8,10 @@ var bgUrls = [];
 
 app.set('port', process.env.PORT || 8080);
 
-AWS.config.loadFromPath('./AWSconfig.json');
-var s3 = new AWS.S3();
+var s3 = new AWS.S3({
+  accessKeyId: process.env.S3_KEY,
+  secretAccessKey: process.env.S3_SECRET
+});
 
 app.use('/static', express.static(path.join(__dirname+'/dist/static')))
 

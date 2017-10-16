@@ -1,1 +1,1 @@
-{ "accessKeyId": "AKIAI4KWRBHI5P5LPGSQ", "secretAccessKey": "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" }
+{ "accessKeyId": process.env.S3_KEY_ID, "secretAccessKey": process.env.S3_KEY }
