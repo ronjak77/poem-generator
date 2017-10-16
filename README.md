@@ -1,6 +1,6 @@
-# forest
+# Forest poem generator
 
-> Forest poems
+A demo of the project: runogeneraattori.herokuapp.com/ 
 
 ## Build Setup
 
@@ -8,14 +8,8 @@
 # install dependencies
 npm install
 
-# serve with hot reload at localhost:8080
-npm run dev
+Set up AWS keys
+>S3_KEY=xxxx
+>S3_SECRET=xxxx
 
-# build for production with minification
-npm run build
-
-# build for production and view the bundle analyzer report
-npm run build --report
-```
-
-For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+Run with command node poem.js (or using Heroku, set up AWS keys as config vars & in .env file and then run with heroku local) 
