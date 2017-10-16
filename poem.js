@@ -65,7 +65,7 @@ app.get('/galleria', function(req, res) {
     else  {
       var bucketContents = data.Contents;
       console.log(bucketContents);
-      for (var i = 1; i < bucketContents.length; i++){
+      for (var i = 1; i < bucketContents.length-1; i++){
         var imag = {};
         var urlParams = {Bucket: 'poem-generator', Key: bucketContents[i].Key};
         s3.getSignedUrl('getObject', urlParams, function(err, url){
@@ -92,7 +92,7 @@ app.get('/gallery', function(req, res) {
     else  {
       var bucketContents = data.Contents;
       console.log(bucketContents);
-      for (var i = 1; i < bucketContents.length; i++){
+      for (var i = 1; i < bucketContents.length-1; i++){
         var imag = {};
         var urlParams = {Bucket: 'poem-generator', Key: bucketContents[i].Key};
         s3.getSignedUrl('getObject', urlParams, function(err, url){
