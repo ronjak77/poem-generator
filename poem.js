@@ -58,7 +58,7 @@ app.post('/upload', function (req, res) {
 })
 
 app.get('/galleria', function(req, res) {
-  var params = { Bucket: 'poem-generator', Prefix: "approved" };
+  var params = { Bucket: 'poem-generator', Prefix: "approved/" };
 
   var imageUrls = [];
   s3.listObjectsV2(params, function(err, data){
@@ -67,14 +67,9 @@ app.get('/galleria', function(req, res) {
       var bucketContents = data.Contents;
       for (var i = 1; i < bucketContents.length; i++) {
         var urlParams = {Bucket: 'poem-generator', Key: bucketContents[i].Key};
-        s3.getSignedUrl('getObject', urlParams, function(err, url){
-          if (err) console.log(err, err.stack);
-          else  {
-            var imag = {};
-            imag.url = url;
+        var imag = {};
+            imag.url = "https://poem-generator.s3-eu-west-1.amazonaws.com/" + bucketContents[i].Key;
             imageUrls[i-1] = imag;
-          }
-        });
       }
       res.render('gallery', { images: imageUrls });
     }
@@ -83,7 +78,7 @@ app.get('/galleria', function(req, res) {
 })
 
 app.get('/gallery', function(req, res) {
-  var params = { Bucket: 'poem-generator', Prefix: "approvedEng" };
+  var params = { Bucket: 'poem-generator', Prefix: "approvedEng/" };
 
   var imageUrls = [];
   s3.listObjectsV2(params, function(err, data){
@@ -92,14 +87,9 @@ app.get('/gallery', function(req, res) {
       var bucketContents = data.Contents;
       for (var i = 1; i < bucketContents.length; i++) {
         var urlParams = {Bucket: 'poem-generator', Key: bucketContents[i].Key};
-        s3.getSignedUrl('getObject', urlParams, function(err, url){
-          if (err) console.log(err, err.stack);
-          else  {
-            var imag = {};
-            imag.url = url;
+        var imag = {};
+            imag.url = "https://poem-generator.s3-eu-west-1.amazonaws.com/" + bucketContents[i].Key;
             imageUrls[i-1] = imag;
-          }
-        });
       }
       res.render('gallery', { images: imageUrls });
     }
