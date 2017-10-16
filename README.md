@@ -1,6 +1,6 @@
 # Forest poem generator
 
-A demo of the project: runogeneraattori.herokuapp.com/ 
+A demo of the project: [runogeneraattori.herokuapp.com/](runogeneraattori.herokuapp.com/)
 
 ## Build Setup
 
@@ -9,7 +9,7 @@ A demo of the project: runogeneraattori.herokuapp.com/
 npm install
 
 Set up AWS keys
->S3_KEY=xxxx
->S3_SECRET=xxxx
+S3_KEY=xxxx
+S3_SECRET=xxxx
 
 Run with command node poem.js (or using Heroku, set up AWS keys as config vars & in .env file and then run with heroku local) 
