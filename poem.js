@@ -104,16 +104,19 @@ app.get('/bg', function(req, res) {
 })
 
 app.listen(app.get('port'), function () {
-  var params = { Bucket: 'poem-generator', "Prefix": "bg/" };
+  var params = { Bucket: 'poem-generator', Prefix: "bg" };
   var prefix = 'https://poem-generator.s3-eu-west-1.amazonaws.com/';
 
-  s3.listObjects(params, function(err, data){
-    var bucketContents = data.Contents;
-    for (var i = 0; i < bucketContents.length; i++) {
-      imag = {};
-      imag.url = prefix + bucketContents[i].Key;
-      imag.key = bucketContents[i].Key;
-      bgUrls[i] = imag;
+  s3.listObjectsV2(params, function(err, data){
+    if (err) console.log(err, err.stack); // an error occurred
+    else  {
+      var bucketContents = data.Contents;
+      for (var i = 0; i < bucketContents.length; i++) {
+        imag = {};
+        imag.url = prefix + bucketContents[i].Key;
+        imag.key = bucketContents[i].Key;
+        bgUrls[i] = imag;
+      }
     }
   });
 
