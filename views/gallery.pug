@@ -15,6 +15,7 @@ html
             h2 Luontoruno
           .six.columns
             a(href="/" class="pull-right") Tee oma metsärunosi
+            a(href="/tietoa" class="pull-right") Tietoa
 
     .gallery
       each val, index in images
@@ -30,21 +31,21 @@ html
           if pre_page || next_page
             .pager.center
               if pre_page
-                a(href="?page=" + pre_page).prev
+                a(href="?page=" + pre_page + "&lang=" + lang).prev
                   |  Edellinen
               span Sivu: #{page}
               if next_page
-                a(href="?page=" + next_page).next
+                a(href="?page=" + next_page + "&lang=" + lang).next
                   | Seuraava
 
             - var m = 1
-              while m < total_pages
+              while m < total_pages + 1
                 button.btn-pagination
                   if(m == page)
-                    a(href="?page=" + m++)
+                    a(href="?page=" + m++ + "&lang=" + lang)
                       b #{m-1}
                   else
-                    a(href="?page=" + m)= m++
+                    a(href="?page=" + m + "&lang=" + lang)= m++
 
 
 

@@ -108,12 +108,18 @@ app.get('/imgmetas/:imgID', function(req, res){
 
 app.get('/galleria', async (req, res) => {
   var page = req.query.page || 1;
+  var lang = req.query.lang;
+  var prefix = "";
+  if(lang === "en") {
+    prefix =  "approvedEng/";
+  } else {
+    prefix =  "approved/";
+  }
 
   var per_page = 5;
   var offset = (page - 1) * per_page;
 
-
-  var params = { Bucket: 'poem-generator', Prefix: "approved/" };
+  var params = { Bucket: 'poem-generator', Prefix: prefix };
 
   var imageUrls = [];
   var imageData = [];
@@ -140,6 +146,7 @@ app.get('/galleria', async (req, res) => {
       // const pageCount = Math.ceil(itemCount / req.query.limit);
 
       res.render('gallery', {
+        lang: lang,
         page: page,
         per_page: per_page,
         pre_page: page - 1 > 0 ? page - 1 : null,
@@ -198,6 +205,11 @@ app.get('/gallery', function(req, res) {
     }
   });
 
+})
+
+app.get('/tietoa', function(req, res) {
+ res.render('tietoa', {
+ });
 })
 
 app.get('/bg', function(req, res) {

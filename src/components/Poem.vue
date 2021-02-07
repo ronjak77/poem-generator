@@ -2,8 +2,6 @@
   <div class="poem">
     <p v-show="isFinnish">Tuplaklikkaamalla taustakuvaa voit lisätä sanoja. Voit arpoa uuden sanan tai poistaa nykyisiä. Tuplaklikkaamalla sanaa voit muokata sitä kirjoittamalla, jolloin esim. sanan taivutus onnistuu.</p>
     <p v-show="isFinnish">Omalle koneelle tallentaessa kuvanlaatu on täysikokoinen. Galleriaan tallennetaan pienempi kuva.</p>
-    <p v-show="isFinnish">Jos haluat poistaa runosi, ole hyvä ja ota yhteyttä <a href="mailto:ronja@sisuisa.fi">ronja@sisuisa.fi</a></p>
-    <p v-show="isFinnish">Taustakuvat: <a href="https://unsplash.com/">Unsplash.com</a></p>
     <p v-show="!isFinnish">You can add new words by double-clicking the background. To select a word, click it once. You can edit the currently selected word via the buttons, by re-rolling a new random word, or by deleting it. You can edit the word and write your own custom words by double-clicking one.</p>
 
     <canvas id="canvas" width="800" height="600"></canvas>
