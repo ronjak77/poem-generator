@@ -1,6 +1,7 @@
 <template>
   <div class="poem">
     <p v-show="isFinnish">Tuplaklikkaamalla taustakuvaa voit lisätä sanoja. Voit arpoa uuden sanan tai poistaa nykyisiä. Tuplaklikkaamalla sanaa voit muokata sitä kirjoittamalla, jolloin esim. sanan taivutus onnistuu.</p>
+    <p v-show="isFinnish">Omalle koneelle tallentaessa kuvanlaatu on täysikokoinen. Galleriaan tallennetaan pienempi kuva.</p>
     <p v-show="isFinnish">Jos haluat poistaa runosi, ole hyvä ja ota yhteyttä <a href="mailto:ronja@sisuisa.fi">ronja@sisuisa.fi</a></p>
     <p v-show="isFinnish">Taustakuvat: <a href="https://unsplash.com/">Unsplash.com</a></p>
     <p v-show="!isFinnish">You can add new words by double-clicking the background. To select a word, click it once. You can edit the currently selected word via the buttons, by re-rolling a new random word, or by deleting it. You can edit the word and write your own custom words by double-clicking one.</p>
@@ -8,9 +9,9 @@
     <canvas id="canvas" width="800" height="600"></canvas>
     <word v-for="item in wordlist" v-bind:type="item" :lang="language" :canvas="canvas"></word>
 
-    <label for="name" >Nimesi (vapaaehtoinen)
+   <!--  <label for="name" >Nimesi (vapaaehtoinen)
     <input id="name" type="text"  v-model="authorName"></label>
-    <br>
+    <br> -->
 
     <button v-show="!uploading" @click="saveCanvas()"><p v-show="isFinnish">Lähetä galleriaan</p><p v-show="!isFinnish">Upload to gallery</p></button><i v-show="uploading" class="fa fa-spinner fa-spin"></i>
 
@@ -93,28 +94,55 @@ export default {
     },
     saveCanvas: function() {
       var self = this;
-      self.uploading = true;
-      console.log(this.wordlist);
 
-      var imageData = this.canvas.toDataURL({ format: 'png', multiplier: 0.5, width: 800, height: 600 });
-      var xhr = new XMLHttpRequest();
-      xhr.open('POST', 'upload', true);
-      xhr.setRequestHeader("Content-type", "application/json");
-      xhr.onload = function () {
-        if (xhr.status === 200) {
-          alert('Uploaded ok');
-        } else {
-          alert('An error occurred!');
-        }
-        self.uploading = false;
-      };
-      var data = JSON.stringify({ "image": imageData, "langFI": self.isFinnish, "author": self.authorName });
-      xhr.send(data);
+      if(this.wordlist.length < 4) {
+        alert('Runosi on liian lyhyt');
+      } else {
+        self.uploading = true;
+        var imageData = this.canvas.toDataURL({ format: 'png', multiplier: 0.8, width: 800, height: 600 });
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', 'upload', true);
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.onload = function () {
+          if (xhr.status === 200) {
+            alert('Uploaded ok');
+          } else {
+            alert('An error occurred!');
+          }
+          self.uploading = false;
+          // setTimeout(() => self.uploading = false, 2000);
+        };
+        var data = JSON.stringify({ "image": imageData, "langFI": self.isFinnish, "author": self.authorName });
+        xhr.send(data);
+      }
     },
     saveToPC: function() {
       var self = this;
-      var imageData = this.canvas.toDataURL('png');
-      window.open(imageData);
+      var type = "image/jpeg";
+      var imageData = this.canvas.toDataURL('jpeg');
+
+      const a = document.createElement("a");
+      a.style.display = "none";
+      document.body.appendChild(a);
+
+      // Set the HREF to a Blob representation of the data to be downloaded
+      // a.href = window.URL.createObjectURL(
+      //   new Blob([imageData], { type })
+      // );
+      a.href = imageData;
+
+      // Use download attribute to set set desired file name
+      a.setAttribute("download", Math.floor(Date.now() / 1000));
+
+      // Trigger the download by simulating click
+      a.click();
+
+      // Cleanup
+      window.URL.revokeObjectURL(a.href);
+      document.body.removeChild(a);
+
+
+      // window.open(imageData);
     },
     changeBG: function() {
       var self = this;

@@ -41,7 +41,7 @@ app.post('/upload', function (req, res) {
     var foldername = "approvedEng/";
   }
 
-  var authorTag = "author="+req.body.author;
+  var authorTag = req.body.author;
   var fileUploadData = {
     Key: (foldername + filename),
     Bucket: myBucket,
@@ -67,22 +67,38 @@ app.post('/upload', function (req, res) {
 })
 
 
-app.get('/imgs/approved/:imgID', function(req, res){
+app.get('/imgs/:imgFolder/:imgID', function(req, res){
 
-  s3.getObject({ Bucket: 'poem-generator', Key: 'approved/' + req.params.imgID}, function(err, data){
+  s3.getObject({ Bucket: 'poem-generator', Key: req.params.imgFolder + "/" + req.params.imgID }, function(err, data){
+    if (err) {
+      console.log(err);
+      return res.status(500).send("Error!");
+    }
+
+    res.set("Content-Length",data.ContentLength)
+       .set("Content-Type",data.ContentType);
+
+    res.send(data.Body); // data.Body is a buffer
+
+  });
+
+})
+
+
+app.get('/imgmetas/:imgID', function(req, res){
+
+  s3.getObject({ Bucket: 'poem-generator', Key: 'approved/' + req.params.imgID }, function(err, data){
 
     if (err) {
       console.log(err);
       return res.status(500).send("Error!");
     }
 
-    // Headers
-    console.log(data);
+    // res.set("Content-Length",data.ContentLength)
+    //    .set("Content-Type",data.ContentType);
+    res.setHeader('Content-Type', 'application/json');
 
-    res.set("Content-Length",data.ContentLength)
-       .set("Content-Type",data.ContentType);
-
-    res.send(data.Body); // data.Body is a buffer
+    res.send({"img": data.Body, "author":  data.Metadata, "date": data.LastModified }); // data.Body is a buffer
 
   });
 
@@ -113,7 +129,7 @@ app.get('/galleria', async (req, res) => {
         var imag = {};
         imag.url = "/imgs/" + bucketContents[i].Key;
         imageUrls[i-1] = imag;
-        imageData[i-1] = {"author": "Kalle", "date": "1.1.2020"};
+        imageData[i-1] = {"date":  bucketContents[i].LastModified};
       }
 
       paginatedItems = imageUrls.slice(offset).slice(0, per_page);
@@ -132,9 +148,8 @@ app.get('/galleria', async (req, res) => {
         total_pages: total_pages,
         images: paginatedItems,
         imagemeta: paginatedMeta,
-       // pageCount,
-       // itemCount,
-       // pages: paginate.getArrayPages(req)(3, pageCount, req.query.page)
+        moment: require( 'moment' )
+
       });
     }
   });
@@ -142,9 +157,17 @@ app.get('/galleria', async (req, res) => {
 })
 
 app.get('/gallery', function(req, res) {
-  var params = { Bucket: 'poem-generator', Prefix: "approvedEng/", MaxKeys: "10" };
+  var page = req.query.page || 1;
+
+  var per_page = 5;
+  var offset = (page - 1) * per_page;
+
+
+  var params = { Bucket: 'poem-generator', Prefix: "approvedEng/" };
 
   var imageUrls = [];
+  var imageData = [];
+
   s3.listObjectsV2(params, function(err, data){
     if (err) console.log(err, err.stack);
     else  {
@@ -154,8 +177,24 @@ app.get('/gallery', function(req, res) {
         var imag = {};
             imag.url = "/imgs/" + bucketContents[i].Key;
             imageUrls[i-1] = imag;
+            imageData[i-1] = {"date":  bucketContents[i].LastModified};
       }
-      res.render('gallery', { images: imageUrls });
+
+      paginatedItems = imageUrls.slice(offset).slice(0, per_page);
+      paginatedMeta = imageData.slice(offset).slice(0, per_page);
+      total_pages = Math.ceil(imageUrls.length / per_page);
+
+      res.render('gallery', {
+        page: page,
+        per_page: per_page,
+        pre_page: page - 1 > 0 ? page - 1 : null,
+        next_page: (total_pages > page) ? Number(page) + 1 : null,
+        total: imageUrls.length,
+        total_pages: total_pages,
+        images: paginatedItems,
+        imagemeta: paginatedMeta,
+        moment: require( 'moment' )
+      });
     }
   });
 
@@ -177,7 +216,7 @@ app.listen(app.get('port'), function () {
       var bucketContents = data.Contents;
       for (var i = 0; i < bucketContents.length; i++) {
         imag = {};
-        imag.url = prefix + bucketContents[i].Key;
+        imag.url = "/imgs/" + bucketContents[i].Key;
         imag.key = bucketContents[i].Key;
         bgUrls[i] = imag;
       }
