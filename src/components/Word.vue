@@ -859,7 +859,7 @@ export default {
 
     var controlElementLabel, removalElementLabel;
     if(self.isFinnish) {
-      controlElementLabel = 'Vaihda\nsana';
+      controlElementLabel = 'Vaihdaa\nsana';
       removalElementLabel = 'Poista\nsana';
     } else {
       controlElementLabel = 'Randomize\nword';

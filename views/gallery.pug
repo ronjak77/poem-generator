@@ -17,4 +17,37 @@ html
 
     .gallery
       each val, index in images
-        img(class='img-grid' src=val.url)
+        .img-grid
+          img(src=val.url)
+          p #{imagemeta[index].author} - #{imagemeta[index].date}
+        //- .asd
+        //-   pre #{imagemeta}
+      //- each val, index in imagemeta
+      //-   img(class='img-grid' src=val.url)
+
+    nav.pagination
+      .container
+        .row
+          if pre_page || next_page
+            .pager.center
+              if pre_page
+                a(href="?page=" + pre_page).prev
+                  i.fa.fa-arrow-circle-left
+                  |  Edellinen
+              span Sivu: #{page}
+              if next_page
+                a(href="?page=" + next_page).next
+                  | Seuraava
+                  i.fa.fa-arrow-circle-right
+
+            - var m = 1
+              while m < total_pages
+                button.btn-pagination
+                  if(m == page)
+                    a(href="?page=" + m++)
+                      b #{m-1}
+                  else
+                    a(href="?page=" + m)= m++
+
+
+

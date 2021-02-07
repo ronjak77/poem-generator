@@ -1,10 +1,19 @@
 <template>
   <div class="poem">
     <p v-show="isFinnish">Tuplaklikkaamalla taustakuvaa voit lisätä sanoja. Voit arpoa uuden sanan tai poistaa nykyisiä. Tuplaklikkaamalla sanaa voit muokata sitä kirjoittamalla, jolloin esim. sanan taivutus onnistuu.</p>
+    <p v-show="isFinnish">Jos haluat poistaa runosi, ole hyvä ja ota yhteyttä <a href="mailto:ronja@sisuisa.fi">ronja@sisuisa.fi</a></p>
+    <p v-show="isFinnish">Taustakuvat: <a href="https://unsplash.com/">Unsplash.com</a></p>
     <p v-show="!isFinnish">You can add new words by double-clicking the background. To select a word, click it once. You can edit the currently selected word via the buttons, by re-rolling a new random word, or by deleting it. You can edit the word and write your own custom words by double-clicking one.</p>
+
     <canvas id="canvas" width="800" height="600"></canvas>
     <word v-for="item in wordlist" v-bind:type="item" :lang="language" :canvas="canvas"></word>
+
+    <label for="name" >Nimesi (vapaaehtoinen)
+    <input id="name" type="text"  v-model="authorName"></label>
+    <br>
+
     <button v-show="!uploading" @click="saveCanvas()"><p v-show="isFinnish">Lähetä galleriaan</p><p v-show="!isFinnish">Upload to gallery</p></button><i v-show="uploading" class="fa fa-spinner fa-spin"></i>
+
     <button v-show="!changingBG" @click="changeBG()"><p v-show="isFinnish">Vaihda taustakuva</p><p v-show="!isFinnish">Change background image</p></button><i v-show="changingBG" class="fa fa-spinner fa-spin"></i>
     <button @click="saveToPC()"><p v-show="isFinnish">Tallenna koneelle</p><p v-show="!isFinnish">Save locally</p></button>
   </div>
@@ -12,33 +21,6 @@
 
 <script>
 import Word from './Word'
-
-var credits = {"arr": [
-    {"id": "1", "url": "https://www.flickr.com/photos/juhoholmi/30118947266/", "title": "Jylkynoja 2", "author": "Juho Holmi"},
-    {"id": "2", "url": "https://www.flickr.com/photos/67135676@N04/32462123610/", "title": "Forest", "author": "Minna Halonen"},
-    {"id": "3", "url": "https://www.flickr.com/photos/80429160@N07/7879988542/", "title": "Forest", "author": "Daniela"},
-    {"id": "4", "url": "https://www.flickr.com/photos/105637782@N04/10327378784/", "title": "Forest", "author": "Mariya Chorna"},
-    {"id": "5", "url": "https://www.flickr.com/photos/a-herzog/15253502399/", "title": "autumn forest", "author": "Stiller Beobachter"},
-    {"id": "6", "url": "https://www.flickr.com/photos/andrewmalone/6965495286/", "title": "Forest", "author": "Andrew Malone"},
-    {"id": "7", "url": "https://www.flickr.com/photos/davidstrom/15516370872/", "title": "Forest", "author": "David Strom"},
-    {"id": "8", "url": "https://www.flickr.com/photos/zsoolt/3545650978/", "title": "Forest", "author": "zsoolt"},
-    {"id": "9", "url": "https://www.flickr.com/photos/neil_roger/3087249891/", "title": "Forest", "author": "neil roger"},
-    {"id": "10", "url": "https://www.flickr.com/photos/foto-kouba/6299871278/", "title": "Primeval forest", "author": "Jaroslav Kuba"},
-    {"id": "11", "url": "https://www.flickr.com/photos/three_if_by_bike/3063055501/", "title": "The Woods", "author": "ThreeIfByBike"},
-    {"id": "12", "url": "https://www.flickr.com/photos/craigcloutier/3140160186/", "title": "deep dark forest", "author": "craig Cloutier"},
-    {"id": "13", "url": "https://www.flickr.com/photos/damienz/7682053216/", "title": "Forest moment", "author": "Daniel Sjöström"},
-    {"id": "14", "url": "https://www.flickr.com/photos/mladjenovic_n/8594411923/", "title": "1232 Forest", "author": "nebojsa mladjenovic"},
-    {"id": "15", "url": "https://www.flickr.com/photos/miguelvirkkunen/10889431856/", "title": "Birch Forest", "author": "Miguel Virkkunen Carvalho"},
-    {"id": "16", "url": "https://www.flickr.com/photos/andrein/2811470968/", "title": "woods", "author": "Andrei Niemimäki"},
-    {"id": "17", "url": "https://www.flickr.com/photos/miguelvirkkunen/6280958247/", "title": "Forest Path", "author": "Miguel Virkkunen Carvalho"},
-    {"id": "18", "url": "https://www.flickr.com/photos/villoks/6572345877/", "title": "Luminen metsä", "author": "Ville Oksanen"},
-    {"id": "19", "url": "https://www.flickr.com/photos/villoks/6575100589/", "title": "metsä 029", "author": "Ville Oksanen"},
-    {"id": "20", "url": "https://www.flickr.com/photos/alessandrogrussu/28330491011/", "title": "FIN_189 - Pyhä-Luosto", "author": "Alessandro Grussu"},
-    {"id": "21", "url": "https://www.flickr.com/photos/david_e_smith/3240592407/", "title": "Winter forest, January 2009", "author": "Dave_S."},
-    {"id": "22", "url": "https://www.flickr.com/photos/jannefoo/3242177422/", "title": "Lujabetonilta etelään", "author": "Janne"},
-    {"id": "23", "url": "https://www.flickr.com/photos/jannefoo/4568614299/", "title": "Aurinko laskee harjun taakse", "author": "Janne"},
-    {"id": "24", "url": "https://www.flickr.com/photos/miguelvirkkunen/11385819296/", "title": "Koli National Park", "author": "Miguel Virkkunen Carvalho"}
-], "total": 24 }
 
 
 export default {
@@ -48,7 +30,8 @@ export default {
       wordlist: [],
       canvas: {},
       uploading: false,
-      changingBG: false
+      changingBG: false,
+      authorName: "",
     }
   },
 
@@ -104,10 +87,16 @@ export default {
         this.wordlist.push({ type: type, startPos: coord });
       }
     },
+    askName: function() {
+      var self = this;
+      self.askName = true;
+    },
     saveCanvas: function() {
       var self = this;
       self.uploading = true;
-      var imageData = this.canvas.toDataURL('png');
+      console.log(this.wordlist);
+
+      var imageData = this.canvas.toDataURL({ format: 'png', multiplier: 0.5, width: 800, height: 600 });
       var xhr = new XMLHttpRequest();
       xhr.open('POST', 'upload', true);
       xhr.setRequestHeader("Content-type", "application/json");
@@ -119,7 +108,7 @@ export default {
         }
         self.uploading = false;
       };
-      var data = JSON.stringify({ "image": imageData, "langFI": self.isFinnish });
+      var data = JSON.stringify({ "image": imageData, "langFI": self.isFinnish, "author": self.authorName });
       xhr.send(data);
     },
     saveToPC: function() {

@@ -13,7 +13,7 @@
 import Poem from './components/Poem'
 import normalize from './assets/normalize.css'
 import skeleton from './assets/skeleton.css'
-import fa from './assets/font-awesome-4.7.0/css/font-awesome.min.css'
+// import fa from './assets/font-awesome-4.7.0/css/font-awesome.min.css'
 
 export default {
   name: 'app',

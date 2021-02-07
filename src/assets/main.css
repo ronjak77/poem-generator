@@ -1,15 +1,22 @@
 .img-grid {
+  padding: 3em;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+.img-grid img {
   width: 800px;
   height: 600px;
-  padding: 3em;
-  display:block;
-  margin-left:auto;
-  margin-right:auto;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: #ccc;
 }
 
 .gallery {
-   margin: 0 auto !important;
-   padding-bottom: 2em;
+ margin: 0 auto !important;
+ padding-bottom: 2em;
 }
 
 .menu {
@@ -18,4 +25,20 @@
 
 .pull-right {
   float: right;
+}
+
+.next, .prev {
+  padding: 1em;
+  display: inline-block;
+  margin-bottom: 2em;
+}
+
+.center {
+  text-align: center;
+}
+
+.btn-pagination {
+  margin: 0.5em;
+  width: 100px !important;
+  font-size: 16px;
 }
